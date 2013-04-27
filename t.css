@@ -1,4 +1,5 @@
 
 .bold { font-weight: bold; font-size: 16px; }
+.boldRed { color: red; }
 
 .selected { border: 1px solid black; }

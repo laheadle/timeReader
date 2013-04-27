@@ -1,5 +1,6 @@
 /*
  todo: search for dates. currentDate
+ interface scroller: findPrev(function(para)), convert(para), unconvert(para), clear(), reset()
 */
 
 $(function() {
@@ -48,7 +49,7 @@ $(function() {
             if (elt.childNodes[i].nodeType == TEXT) {
                 htmls.push(elt.childNodes[i].nodeValue)
             }
-            else if($(elt.childNodes[i]).hasClass('word')) {
+            else if($(elt.childNodes[i]).hasClass('word') && !$(elt.childNodes[i]).hasClass('bold')) {
                 htmls.push(elt.childNodes[i].innerText)
             }
             else {
@@ -62,7 +63,7 @@ $(function() {
     function clear() {
         if (found) {
             $(found).removeClass('selected')
-            $(found).find('.bold').removeClass('bold')
+            $(found).find('.bold').removeClass('boldRed')
         }
         found = null
     }
@@ -81,7 +82,7 @@ $(function() {
         }
         convert(found)
         $(found).addClass('selected')
-        $(found).find(":contains('"+word+"')").addClass('bold')
+        $(found).find(":contains('"+word+"')").addClass('bold').addClass('boldRed')
         found.scrollIntoView()
     }
 
