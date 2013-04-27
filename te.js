@@ -15,25 +15,37 @@ $(function() {
     reset()
     var pos, found, word
 
-    function convert(tt) {
-        t = $(tt)
+    function transformChildren(elt, funcs) {
+        var htmls = []
+        for (var i = 0;i < elt.childNodes.length;i++) {
+            var child = elt.childNodes[i]
+            if (child.nodeType == TEXT) {
+                htmls.push(funcs.text(child))
+            }
+            else {
+                htmls.push(funcs.other(child))
+            }
+        }
+
+        return $(elt).html(htmls.join(''))
+    }
+
+    function convert(elt) {
+        t = $(elt)
         if (t.attr('data-converted'))
             return t;
         else {
             t.attr('data-converted', 'y')
         }
 
-        var htmls = []
-        for (var i = 0;i < tt.childNodes.length;i++) {
-            if (tt.childNodes[i].nodeType == TEXT) {
-                htmls.push(tt.childNodes[i].nodeValue.replace(/\b(\w+?)\b/g, '<span class="word">$1</span>'))
+        return transformChildren(elt, {
+            text: function(node) {
+                return node.nodeValue.replace(/\b(\w+?)\b/g, '<span class="word">$1</span>')
+            }, 
+            other: function(child) {
+                return child.outerHTML
             }
-            else {
-                htmls.push(tt.childNodes[i].outerHTML)
-            }
-        }
-
-        return t.html(htmls.join(''))
+        });
     }
 
     function unconvert(elt) {
@@ -44,20 +56,16 @@ $(function() {
             t.removeAttr('data-converted')
         }
 
-        var htmls = []
-        for (var i = 0;i < elt.childNodes.length;i++) {
-            if (elt.childNodes[i].nodeType == TEXT) {
-                htmls.push(elt.childNodes[i].nodeValue)
-            }
-            else if($(elt.childNodes[i]).hasClass('word') && !$(elt.childNodes[i]).hasClass('bold')) {
-                htmls.push(elt.childNodes[i].innerText)
-            }
-            else {
-                htmls.push(elt.childNodes[i].outerHTML)
-            }
-        }
-
-        return $(elt).html(htmls.join(''))
+        return transformChildren(elt, {
+            text: function(node) { return node.nodeValue }, 
+            other: function(child) {
+                if($(child).hasClass('word') && !$(child).hasClass('bold')) {
+                    return child.innerText
+                }
+                else {
+                    return child.outerHTML
+                }
+            }});
     }
 
     function clear() {
