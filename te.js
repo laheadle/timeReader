@@ -62,6 +62,7 @@ $(function() {
         return transformChildren(elt, {
             text: function(node) { return node.nodeValue }, 
             other: function(child) {
+                // fixme depends on Lens
                 if($(child).hasClass('word') && !$(child).hasClass('bold')) {
                     return child.innerText
                 }
@@ -175,34 +176,49 @@ $(function() {
         }
     }
 
-    wlens = new WordLens()
+    var wlens = new WordLens()
+    var lens = wlens
 
-    $('p').mouseenter(function() {
-        convert(this).click(function(event) { wlens.findClicked(event) } );
-    }).mouseleave(function() {
-        if (this !== wlens.found)
-            unconvert(this)
-        $(this).off('click')
-    })
-    
-    $("body").keydown(function(e){
-        // left arrow
-        if ((e.keyCode || e.which) == 37)
-        {   
-            wlens.findPrev()
-        }
-        // right arrow
-        if ((e.keyCode || e.which) == 39)
-        {
-            wlens.findNext()
-        }   
-    });
+    function dropLens() {
+        $('p').off('mouseenter.te')
+        $('p').off('mouseleave.te')
+        $('p').off('click.te')
+        $("body").off('keydown.te')
+        $(document).off('keyup.te')
+    }
 
-    $(document).keyup(function(e) {
+    function useLens(l) {
+        dropLens()
+        lens = l
 
-        if (e.keyCode == 27) {    // esc
-            wlens.clear()
-        }
-    });
+        $('p').on('mouseenter.te', function() {
+            convert(this).click(function(event) { lens.findClicked(event) } );
+        }).on('mouseleave.te', function() {
+            if (this !== lens.found)
+                unconvert(this)
+            $(this).off('click')
+        });
+        
+        $("body").on('keydown.te', function(e){
+            // left arrow
+            if ((e.keyCode || e.which) == 37)
+            {   
+                lens.findPrev()
+            }
+            // right arrow
+            if ((e.keyCode || e.which) == 39)
+            {
+                lens.findNext()
+            }   
+        });
 
+        $(document).on('keyup.te', function(e) {
+
+            if (e.keyCode == 27) {    // esc
+                lens.clear()
+            }
+        });
+    }
+
+    useLens(wlens)
 })
