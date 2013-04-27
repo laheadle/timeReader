@@ -1,20 +1,23 @@
 /*
  todo: search for dates. currentDate
- interface scroller: findPrev(function(para)), convert(para), unconvert(para), clear(), reset()
+ interface scroller: findPrev(function(para)), clear(), reset()
 */
 
 $(function() {
     var TEXT = 3
     ,HTML = 1
+
     var posMax = 0
     $('p').each(function() { $(this).attr('id', 'id'+posMax++) });
 
     var teStatus = $('<span>').css({id: 'teStatus', position: 'fixed', top: '0px', right: '5px', color: 'red', 'background-color': 'white'})
     $('body').append(teStatus)
 
-    reset()
-    var pos, found, word
+    // Frame functions
+    function getP(i) { return $('#id'+i)[0] }
 
+    // transform the children of elt, passing in transform functions
+    // for text nodes and other nodes
     function transformChildren(elt, funcs) {
         var htmls = []
         for (var i = 0;i < elt.childNodes.length;i++) {
@@ -68,93 +71,116 @@ $(function() {
             }});
     }
 
-    function clear() {
-        if (found) {
-            $(found).removeClass('selected')
-            $(found).find('.bold').removeClass('boldRed')
+
+    function Lens() {
+        this.reset()
+    }
+
+    // set position
+    Lens.prototype.setPos = function(i) {
+        this.pos = i
+        teStatus.text(this.pos)
+    }
+
+
+    Lens.prototype.clear = function () {
+        if (this.found) {
+            $(this.found).removeClass('selected')
+            $(this.found).find('.bold').removeClass('boldRed')
         }
-        found = null
+        this.found = null
     }
 
-    function reset() {
-        setPos(-1)
-        word = ''
-        clear()
+    Lens.prototype.reset = function () {
+        this.setPos(-1)
+        this.word = ''
+        this.clear()
     }
 
-    function select() {
-        if (!found) {
-            setPos(-1)
-            clear()
+    Lens.prototype.select = function () {
+        if (!this.found) {
+            this.setPos(-1)
+            this.clear()
             return
         }
-        convert(found)
-        $(found).addClass('selected')
-        $(found).find(":contains('"+word+"')").addClass('bold').addClass('boldRed')
-        found.scrollIntoView()
+        convert(this.found)
+        $(this.found).addClass('selected')
+        this.found.scrollIntoView()
     }
 
-    function getP(i) { return $('#id'+i)[0] }
+    Lens.prototype.findPrev = function () {
+        this.clear()
 
-
-    function findPrev() {
-        clear()
-
-        for (var i = pos - 1;i >= 0;i--) {
+        for (var i = this.pos - 1;i >= 0;i--) {
             var thisp = getP(i)
-            if ($(thisp).text().indexOf(word) != -1 && found === null) {
-                setPos(i)
-                found = thisp
+            if (this.pMatches(thisp) && this.found === null) {
+                this.setPos(i)
+                this.found = thisp
                 break
             }
         }
-        select()
+        this.select()
     }
 
-    function setPos(i) {
-        pos = i
-        teStatus.text(pos)
+    Lens.prototype.findCurrent = function (target) {
+        var idN = Number($(target).parent().attr('id').match(/id(\d+)/)[1])
+        this.setPos(idN)
+        this.found = getP(idN)
+        this.select()
     }
 
-    function findNext() {
-        clear()
+    Lens.prototype.findNext = function () {
+        this.clear()
 
         for (var i = 0;i < posMax;i++) {
             var thisp = getP(i)
-            if (pos < i && $(thisp).text().indexOf(word) != -1 && found === null) {
-                setPos(i)
-                found = thisp
+            // fixme just start loop at this.pos
+            if (this.pos < i && this.pMatches(thisp) && this.found === null) {
+                this.setPos(i)
+                this.found = thisp
                 break
             }
         }
-        select()
+        this.select()
     }
 
-    function findCurrent(target) {
-        var idN = Number($(target).parent().attr('id').match(/id(\d+)/)[1])
-        setPos(idN)
-        found = getP(idN)
-        select()
+    function WordLens() {
+	Lens.call(this);
     }
 
-    function findClicked(event) {
+    WordLens.prototype = new Lens()
+    WordLens.prototype.constructor = WordLens
+
+    WordLens.prototype.select = function() {
+	Lens.prototype.select.call(this);
+        $(this.found).find(":contains('"+this.word+"')").addClass('bold').addClass('boldRed')
+    }
+
+    WordLens.prototype.pMatches = function (thisp) {
+        return $(thisp).text().indexOf(this.word) != -1
+    }
+
+
+    WordLens.prototype.findClicked = function (event) {
         if (!$(event.target).hasClass('word'))
             return true
 
-        reset()
-        word = $(event.target).text()
+        this.reset()
+        this.word = $(event.target).text()
         if (event.ctrlKey) {
-            findCurrent(event.target)
+            this.findCurrent(event.target)
         }
         else {
-            findNext()
+            this.findNext()
         }
     }
 
+    wlens = new WordLens()
+
     $('p').mouseenter(function() {
-        convert(this).click(findClicked);
-    }).mouseleave(function() { 
-        if (this !== found)
+        convert(this).click(function(event) { wlens.findClicked(event) } );
+    }).mouseleave(function() {
+        if (this !== wlens.found)
             unconvert(this)
         $(this).off('click')
     })
@@ -163,19 +189,19 @@ $(function() {
         // left arrow
         if ((e.keyCode || e.which) == 37)
         {   
-            findPrev()
+            wlens.findPrev()
         }
         // right arrow
         if ((e.keyCode || e.which) == 39)
         {
-            findNext()
+            wlens.findNext()
         }   
     });
 
     $(document).keyup(function(e) {
 
         if (e.keyCode == 27) {    // esc
-            clear()
+            wlens.clear()
         }
     });
 
