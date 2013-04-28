@@ -176,8 +176,39 @@ $(function() {
         }
     }
 
+    function DateLens() {
+	Lens.call(this);
+    }
+
+    DateLens.prototype = new Lens()
+    DateLens.prototype.constructor = DateLens
+
+    DateLens.prototype.select = function() {
+	Lens.prototype.select.call(this);
+        $(this.found).find('span.word').each(function() {
+            if ($(this).text().match(/\d\d\d\d/)) {
+                $(this).addClass('bold').addClass('boldRed')
+            }
+        })
+    }
+
+    DateLens.prototype.pMatches = function (thisp) {
+        return $(thisp).text().match(/\d\d\d\d/)
+    }
+
+
+    DateLens.prototype.findClicked = function (event) {
+        this.reset()
+        if (event.ctrlKey) {
+            this.findCurrent(event.target)
+        }
+        else {
+            this.findNext()
+        }
+    }
+
+    var dlens = new DateLens()
     var wlens = new WordLens()
-    var lens = wlens
 
     function dropLens() {
         $('p').off('mouseenter.te')
@@ -185,6 +216,10 @@ $(function() {
         $('p').off('click.te')
         $("body").off('keydown.te')
         $(document).off('keyup.te')
+    }
+
+    function switchLens() {
+        useLens(lens === wlens ? dlens : wlens)
     }
 
     function useLens(l) {
@@ -215,7 +250,7 @@ $(function() {
         $(document).on('keyup.te', function(e) {
 
             if (e.keyCode == 27) {    // esc
-                lens.clear()
+                switchLens() // lens.clear()
             }
         });
     }
