@@ -7,6 +7,21 @@ $(function() {
     var TEXT = 3
     ,HTML = 1
 
+    var months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ]
+
     var posMax = 0
     $('p').each(function() { $(this).attr('id', 'id'+posMax++) });
 
@@ -188,6 +203,13 @@ $(function() {
         $(this.found).find('span.word').each(function() {
             if ($(this).text().match(/\d\d\d\d/)) {
                 $(this).addClass('bold').addClass('boldRed')
+            }
+            else {
+                for (var i = 0;i < months.length;i++) {
+                    if (months[i] == $(this).text()) {
+                        $(this).addClass('bold').addClass('boldRed')
+                    }
+                }
             }
         })
     }
