@@ -15,6 +15,6 @@ Hit Escape to switch between 'Word Mode' and 'Date mode':
 
 Install this Bookmarklet: 
 
-<pre>
+<p>
 javascript:(function(){var script = document.createElement('script'); var head= document.getElementsByTagName('head')[0]; script.src="//stinkless.org/js/te.js"; script.type= 'text/javascript'; head.appendChild(script) })()
-</pre>
+</p>
