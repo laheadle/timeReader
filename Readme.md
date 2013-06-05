@@ -13,4 +13,8 @@ Hit Escape to switch between 'Word Mode' and 'Date mode':
 * left and right arrow to go to the previous/next occurrence of a date.
 * Ctrl-click to select a date and stay on the current paragraph.
 
-Install this Bookmarklet: javascript:(function(){var script = document.createElement('script'); var head= document.getElementsByTagName('head')[0]; script.src="//stinkless.org/js/te.js"; script.type= 'text/javascript'; head.appendChild(script) })()
+Install this Bookmarklet: 
+
+<pre>
+javascript:(function(){var script = document.createElement('script'); var head= document.getElementsByTagName('head')[0]; script.src="//stinkless.org/js/te.js"; script.type= 'text/javascript'; head.appendChild(script) })()
+</pre>
