@@ -4,7 +4,7 @@ history. Currently works on pages composed of sequences of paragraphs.
 You Start in 'Word Mode':
 
 * Click a word and go to the first occurrence of it, highlighting all occurrences in the paragraph.
-* left and right arrow to go to the previous/next occurrence of the word
+* left and right arrow to go to the previous/next paragraph containing of the word
 * Ctrl-click to select a word and stay on the current paragraph
 
 Hit Escape to switch to 'Date mode'
