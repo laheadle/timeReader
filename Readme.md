@@ -7,7 +7,7 @@ You Start in 'Word Mode':
 * left and right arrow to go to the previous/next paragraph containing the word.
 * Ctrl-click to select a word and stay on the current paragraph.
 
-Hit Escape to switch between 'Word Mode' and 'Date mode'
+Hit Escape to switch between 'Word Mode' and 'Date mode':
 
 * Click a paragraph to go to the first occurrence of a year or month.
 * left and right arrow to go to the previous/next occurrence of a date.
