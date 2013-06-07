@@ -1,5 +1,8 @@
 This bookmarklet adds some abilities to a page for reading
-history. Currently works on pages composed of sequences of paragraphs.
+history. Currently works on pages composed of sequences of paragraphs,
+including everything at gutenberg.org ([Macaulay's history of
+England,](http://www.gutenberg.org/files/2612/2612-h/2612-h.htm) for
+example).
 
 You Start in 'Word Mode':
 
